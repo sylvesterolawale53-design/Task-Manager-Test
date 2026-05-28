@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 import appCss from "../styles.css?url";
 
@@ -110,11 +111,40 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const current = router.state.location.pathname;
+  const navItems = [
+    { to: "/", label: "Tasks" },
+    { to: "/events", label: "Events" },
+    { to: "/daily", label: "Daily" },
+    { to: "/food", label: "Food" },
+  ];
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen pb-28">
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </div>
+
+      <footer className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-5xl items-center justify-around gap-2 px-4 py-3">
+          {navItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={cn(
+                "inline-flex flex-col items-center justify-center gap-1 rounded-2xl px-4 py-3 text-xs font-medium transition",
+                current === item.to
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </footer>
     </QueryClientProvider>
   );
 }
